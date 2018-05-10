@@ -49,7 +49,7 @@ def step_query_new_account_id(context):
     ).result()
 
     assert_that(status.status_code, equal_to(200))
-    context.returned_accounts = result.player_accounts
+    context.returned_accounts = result
 
 @then('account service returns accounts with info')
 def assert_account_info_correct(context):
@@ -94,7 +94,7 @@ def step_query_service_with_ids(context):
     ).result()
 
     assert_that(status.status_code, equal_to(200))
-    context.returned_accounts = result.player_accounts
+    context.returned_accounts = result
 
 
 @when('account service receives another request for account id for email address')
@@ -161,22 +161,18 @@ def step_invite_players(context):
 def assert_player_invite_successful(context, acct_email):
     account_emails = list(acct_email)
 
-    result, status = context.clients.account_service.accountInfo.get_player_info(
-        accountIds=list(context.account_ids_mappings[0].values())
+    result, status = context.clients.account_service.accountInfo.get_game_invites(
+        accountId=context.account_ids[acct_email]
     ).result()
     assert_that(status.status_code, equal_to(200))
 
     #helper function to compare expected vs received game gameInvitations
     expected_games = [int(row['game id']) for row in context.table]
-    received_games = result.player_accounts[0]['game_invitations']['game_invitation_ids']
+    received_games = result
     compare_game_invitations(
         expected_games=expected_games,
         received_games=received_games
     )
-
-    expected_game_id = context.table.rows[0]['game id']
-
-    assert_that(result.player_accounts[0]['game_invitations']['game_invitation_ids'][0], equal_to(int(expected_game_id)))
 
 def verify_player_info(table, accounts):
     """

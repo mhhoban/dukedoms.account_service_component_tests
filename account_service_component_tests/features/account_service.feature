@@ -86,7 +86,6 @@ Feature: Account Service
       | game id |
       | 13      |
 
-  @foo
   Scenario: Add Multiple Game Invite Notification
     When account service receives request to invite player to game:
       | player email   | game id |
